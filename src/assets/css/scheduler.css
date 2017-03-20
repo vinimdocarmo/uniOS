@@ -1,0 +1,23 @@
+.scheduler-info {
+    font-size: 10px;
+}
+
+.cpus-container, .processes-container {
+    overflow-x: scroll;
+}
+
+.cpu-box, .process-box {
+    margin-left: 5px;
+    min-width: 50px;
+    max-width: 50px;
+    min-height: 50px;
+    max-height: 50px;
+}
+
+.cpu-box {
+    border: dashed 1px black;
+}
+
+.process-box {
+    border: solid 1px black;
+}

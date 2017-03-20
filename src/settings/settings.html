@@ -1,0 +1,35 @@
+<div layout="column" flex ng-controller="SettingsCtrl">
+    <md-toolbar class="md-hue-2">
+        <div class="md-toolbar-tools">
+            <md-button class="md-icon-button" aria-label="Settings" ng-click="toggleLeft()">
+                <md-icon md-svg-icon="navigation:menu"></md-icon>
+            </md-button>
+
+            <h2 flex>Settings</h2>
+        </div>
+    </md-toolbar>
+    <md-content layout-padding layout="column">
+        <h2>Method</h2>
+        <md-input-container>
+            <label>Scheduler Method</label>
+            <md-select ng-model="method">
+                <md-option value="{{METHODS.ROUND_ROBIN}}">Round Robin</md-option>
+                <md-option value="{{METHODS.LTG}}">Least Time to Go</md-option>
+            </md-select>
+        </md-input-container>
+        <md-input-container ng-show="method === METHODS.ROUND_ROBIN">
+            <label>Quantum</label>
+            <input type="number" max="20" min="2" ng-model="numberOfQuantum">
+        </md-input-container>
+        <h2>CPU</h2>
+        <md-input-container>
+            <label>Number of CPUs</label>
+            <input type="number" max="64" min="1" ng-model="numberOfCPUs">
+        </md-input-container>
+        <md-input-container>
+            <label>Number processes</label>
+            <input type="number" max="64" min="1" ng-model="numberOfProcesses">
+        </md-input-container>
+        <md-button class="md-raised md-primary" ng-click="saveSettings()">save</md-button>
+    </md-content>
+</div>

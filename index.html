@@ -1,19 +1,48 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html ng-app="uniOS">
+<head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
-  </head>
-  <body>
-    <h1>Hello World!</h1>
-    <!-- All of the Node.js APIs are available in this renderer process. -->
-    We are using Node.js <script>document.write(process.versions.node)</script>,
-    Chromium <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
-  </body>
+    <title>uniOS</title>
 
-  <script>
-    // You can also require other files to run in this process
-    require('./renderer.js')
-  </script>
+    <link rel="stylesheet" href="./node_modules/angular-material/angular-material.css">
+    <link rel="stylesheet" href="./src/assets/css/scheduler.css">
+</head>
+<body ng-controller="uniOSCtrl" ng-cloak layout="row">
+
+    <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4">
+
+        <md-toolbar class="md-theme-indigo">
+            <h1 class="md-toolbar-tools">UniOS</h1>
+        </md-toolbar>
+
+        <md-content>
+            <md-list>
+                <md-list-item ui-sref="scheduler" ui-sref-active="active">
+                    <md-icon md-svg-icon="action:autorenew"></md-icon>
+                    <p>Scheduler</p>
+                </md-list-item>
+                <md-list-item ui-sref="settings" ui-sref-active="active">
+                    <md-icon md-svg-icon="action:settings"></md-icon>
+                    <p>Settings</p>
+                </md-list-item>
+            </md-list>
+        </md-content>
+
+    </md-sidenav>
+
+    <md-content ui-view layout-fill></md-content>
+
+    <script src="./node_modules/angular/angular.js"></script>
+    <script src="./node_modules/angular-animate/angular-animate.js"></script>
+    <script src="./node_modules/angular-aria/angular-aria.js"></script>
+    <script src="./node_modules/angular-material/angular-material.js"></script>
+    <script src="./node_modules/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="./src/uniOS.js"></script>
+    <script src="./src/common.js"></script>
+    <script src="./src/scheduler/scheduler.js"></script>
+    <script src="./src/settings/settings.js"></script>
+    <script src="./src/process/process.js"></script>
+</body>
+
+
 </html>

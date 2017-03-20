@@ -1,0 +1,53 @@
+<div layout="column" flex ng-controller="SchedulerCtrl">
+    <md-toolbar class="md-hue-2">
+        <div class="md-toolbar-tools">
+            <md-button class="md-icon-button" aria-label="Settings" ng-click="toggleLeft()">
+                <md-icon md-svg-icon="navigation:menu"></md-icon>
+            </md-button>
+
+            <h2 flex>Scheduler</h2>
+        </div>
+    </md-toolbar>
+    <md-content layout-padding layout="column" layout-align="center space-between">
+        <div>
+            <h2>Scheduler</h2>
+            <md-content layout-padding>
+                <div layout="row" layout-align=" strech" flex>
+                    <div flex="70">
+                        <div layout-padding class="md-whiteframe-1dp">
+                            <h3>
+                                CPU <span class="scheduler-info">({{scheduler.getSettings().getNumberOfCPUs()}} CPUs)</span>
+                            </h3>
+                            <div layout="row" class="cpus-container">
+                                <div ng-repeat="cpu in scheduler.getCPUs()" class="cpu-box"></div>
+                            </div>
+                        </div>
+                        <div layout-padding class="md-whiteframe-1dp">
+                            <h3 layout="row" layout-align="space-between center">
+                                <span>
+                                    Processes
+                                    <span class="scheduler-info">({{scheduler.getSettings().getNumberOfProcesses()}} processes)</span>
+                                </span>
+                                <md-button class="md-icon-button md-raised md-accent">
+                                    <md-icon md-svg-icon="content:add"></md-icon>
+                                </md-button>
+                            </h3>
+                            <div layout="row" class="processes-container">
+                                <div ng-repeat="process in scheduler.getProcesses()" class="process-box">
+                                    {{process.id}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div flex="30" layout="column" layout-padding class="md-whiteframe-1dp">
+                        <h3>Aborted/Terminated</h3>
+                    </div>
+                </div>
+            </md-content>
+        </div>
+        <md-button class="md-raised md-primary" ng-click="runScheduler()">RUN <md-icon md-svg-icon="action:restore"></md-icon></md-button>
+        <md-button class="md-raised md-warn" ng-click="resetScheduler()">
+            RESET <md-icon md-svg-icon="content:clear"></md-icon>
+        </md-button>
+    </md-content>
+</div>
