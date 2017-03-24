@@ -21,3 +21,8 @@
 .process-box {
     border: solid 1px black;
 }
+
+.process-box .process-deadline {
+    font-size: 12px;
+    color: gray;
+}

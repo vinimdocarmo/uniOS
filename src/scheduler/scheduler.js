@@ -24,7 +24,7 @@
                 return processes;
             },
             addProcess(process) {
-                processes.push(process);
+                _addInOrder(process);
                 settings.setNumberOfProcesses(settings.getNumberOfProcesses() + 1);
             },
             clearScheduler() {
@@ -40,7 +40,7 @@
 
         function buildProcesses() {
             for (let i = 0; i < settings.getNumberOfProcesses(); i++) {
-                processes.push(new Process());
+                _addInOrder(new Process());
             }
         }
 
@@ -48,21 +48,34 @@
             CPUs = [];
             processes = [];
         }
+
+        function _addInOrder(process) {
+            var sortedIndex = _.sortedIndex(processes, process, function (proc) {
+                return proc.deadline;
+            });
+
+            processes.splice(sortedIndex, 0, process);
+        }
     }
 
-    function SchedulerCtrl($scope, scheduler) {
+    function SchedulerCtrl($scope, scheduler, Process) {
         scheduler.build();
 
         $scope.scheduler = scheduler;
 
         $scope.runScheduler = runScheduler;
         $scope.resetScheduler = resetScheduler;
+        $scope.addNewProcess = addNewProcess;
 
         function runScheduler() {
         }
 
         function resetScheduler() {
             $scope.scheduler.build();
+        }
+
+        function addNewProcess() {
+            scheduler.addProcess(new Process());
         }
     }
 
