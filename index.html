@@ -9,7 +9,7 @@
 </head>
 <body ng-controller="uniOSCtrl" ng-cloak layout="row">
 
-    <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4">
+    <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4" md-is-locked-open="true">
 
         <md-toolbar class="md-theme-indigo">
             <h1 class="md-toolbar-tools">UniOS</h1>
@@ -30,6 +30,7 @@
 
     </md-sidenav>
 
+
     <md-content ui-view layout-fill></md-content>
 
     <script src="./node_modules/angular/angular.js"></script>
@@ -37,6 +38,7 @@
     <script src="./node_modules/angular-aria/angular-aria.js"></script>
     <script src="./node_modules/angular-material/angular-material.js"></script>
     <script src="./node_modules/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="./node_modules/underscore/underscore.js"></script>
     <script src="./src/uniOS.js"></script>
     <script src="./src/common.js"></script>
     <script src="./src/scheduler/scheduler.js"></script>
