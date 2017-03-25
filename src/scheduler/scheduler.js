@@ -1,12 +1,14 @@
 (function () {
 
     angular
-        .module('scheduler', ['settings', 'process'])
+        .module('scheduler', ['settings', 'process', 'cpu'])
         .service('scheduler', scheduler)
         .controller('SchedulerCtrl', SchedulerCtrl);
 
-    function scheduler(settings, Process) {
-        var CPUs, processes;
+    function scheduler(settings, Process, CPU) {
+        var CPUs = [],
+            processes = [],
+            terminatedProcesses = [];
 
         return {
             build() {
@@ -23,18 +25,35 @@
             getProcesses() {
                 return processes;
             },
+            getTerminatedProcesses() {
+                return terminatedProcesses;
+            },
             addProcess(process) {
                 _addInOrder(process);
+                process.startLifeCycle();
                 settings.setNumberOfProcesses(settings.getNumberOfProcesses() + 1);
             },
             clearScheduler() {
                 clearScheduler();
+            },
+            run() {
+                _startProcessesLifeCycle();
+            },
+            nextProcess () {
+                if (_.isEmpty(processes)) {
+                    return null;
+                }
+                settings.setNumberOfProcesses(settings.getNumberOfProcesses() - 1);
+                return processes.shift();
+            },
+            addTerminatedProcess(process) {
+                return terminatedProcesses.push(process);
             }
         };
 
         function buildCPUs() {
             for (let i = 0; i < settings.getNumberOfCPUs(); i++) {
-                CPUs.push(i);
+                CPUs.push(new CPU());
             }
         }
 
@@ -47,6 +66,7 @@
         function clearScheduler() {
             CPUs = [];
             processes = [];
+            terminatedProcesses = [];
         }
 
         function _addInOrder(process) {
@@ -56,9 +76,13 @@
 
             processes.splice(sortedIndex, 0, process);
         }
+
+        function _startProcessesLifeCycle() {
+            _.each(processes, (process) => process.startLifeCycle());
+        }
     }
 
-    function SchedulerCtrl($scope, scheduler, Process) {
+    function SchedulerCtrl($scope, $interval, scheduler, Process) {
         scheduler.build();
 
         $scope.scheduler = scheduler;
@@ -68,6 +92,30 @@
         $scope.addNewProcess = addNewProcess;
 
         function runScheduler() {
+            $scope.$on('CPU_EMPTY', (event, cpu) => {
+                event.stopPropagation();
+                var nextProcess = scheduler.nextProcess();
+                if (nextProcess) {
+                    cpu.setProcess(nextProcess);
+                }
+            });
+
+            $scope.$on('PROCESS_TERMINATED', (event, terminatedProcess) => {
+                event.stopPropagation();
+                scheduler.addTerminatedProcess(terminatedProcess);
+            });
+
+            $interval(() => abortProcess(), 100);
+
+            $scope.scheduler.run();
+        }
+
+        function abortProcess() {
+            var nextProcess = _.first(scheduler.getProcesses());
+
+            if (nextProcess && nextProcess.deadline === 0) {
+                scheduler.addTerminatedProcess(scheduler.nextProcess());
+            }
         }
 
         function resetScheduler() {
