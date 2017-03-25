@@ -2,6 +2,10 @@
 
     angular
         .module('uniOS', ['ngMaterial', 'ui.router', 'scheduler'])
+        .constant('EVENTS', {
+            EMPTY_CPU: 'EMPTY_CPU',
+            PROCESS_DONE: 'PROCESS_DONE'
+        })
         .config(function($mdIconProvider, $stateProvider) {
             $mdIconProvider
                 .iconSet('action', './src/assets/img/icons/action.svg')

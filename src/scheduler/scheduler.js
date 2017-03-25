@@ -37,7 +37,7 @@
                 clearScheduler();
             },
             run() {
-                _startProcessesLifeCycle();
+                startProcessesLifeCycle();
             },
             nextProcess () {
                 if (_.isEmpty(processes)) {
@@ -77,12 +77,12 @@
             processes.splice(sortedIndex, 0, process);
         }
 
-        function _startProcessesLifeCycle() {
+        function startProcessesLifeCycle() {
             _.each(processes, (process) => process.startLifeCycle());
         }
     }
 
-    function SchedulerCtrl($scope, $interval, scheduler, Process) {
+    function SchedulerCtrl($scope, $interval, scheduler, Process, EVENTS) {
         scheduler.build();
 
         $scope.scheduler = scheduler;
@@ -92,25 +92,13 @@
         $scope.addNewProcess = addNewProcess;
 
         function runScheduler() {
-            $scope.$on('CPU_EMPTY', (event, cpu) => {
-                event.stopPropagation();
-                var nextProcess = scheduler.nextProcess();
-                if (nextProcess) {
-                    cpu.setProcess(nextProcess);
-                }
-            });
-
-            $scope.$on('PROCESS_TERMINATED', (event, terminatedProcess) => {
-                event.stopPropagation();
-                scheduler.addTerminatedProcess(terminatedProcess);
-            });
-
-            $interval(() => abortProcess(), 100);
-
+            subscribeEmptyCPUEvent();
+            subscribeProcessDoneEvent();
             $scope.scheduler.run();
+            $interval(abortNextProcessIfDeadlineIsZero, 0);
         }
 
-        function abortProcess() {
+        function abortNextProcessIfDeadlineIsZero() {
             var nextProcess = _.first(scheduler.getProcesses());
 
             if (nextProcess && nextProcess.deadline === 0) {
@@ -124,6 +112,23 @@
 
         function addNewProcess() {
             scheduler.addProcess(new Process());
+        }
+
+        function subscribeEmptyCPUEvent() {
+            $scope.$on(EVENTS.EMPTY_CPU, (event, cpu) => {
+                event.stopPropagation();
+                var nextProcess = scheduler.nextProcess();
+                if (nextProcess) {
+                    cpu.setProcess(nextProcess);
+                }
+            });
+        }
+
+        function subscribeProcessDoneEvent() {
+            $scope.$on(EVENTS.PROCESS_DONE, (event, terminatedProcess) => {
+                event.stopPropagation();
+                scheduler.addTerminatedProcess(terminatedProcess);
+            });
         }
     }
 

@@ -24,16 +24,16 @@
         return CPU;
     }
 
-    function CPUCtrl($scope, $interval, scheduler) {
+    function CPUCtrl($scope, $interval, scheduler, EVENTS) {
         $scope.scheduler = scheduler;
 
-        $interval(() => notifyEmptyCore(), 100);
-        $interval(() => notifyTerminatedProcess(), 100);
+        $interval(notifyEmptyCore, 100);
+        $interval(notifyTerminatedProcess, 100);
 
         function notifyEmptyCore() {
             _.each(scheduler.getCPUs(), (cpu) => {
                 if (cpu.process === null) {
-                    $scope.$emit('CPU_EMPTY', cpu);
+                    $scope.$emit(EVENTS.EMPTY_CPU, cpu);
                 }
             });
         }
@@ -41,7 +41,7 @@
         function notifyTerminatedProcess() {
             _.each(scheduler.getCPUs(), (cpu) => {
                 if (cpu.process && cpu.process.timeLeft === 0) {
-                    $scope.$emit('PROCESS_TERMINATED', cpu.releaseProcess());
+                    $scope.$emit(EVENTS.PROCESS_DONE, cpu.releaseProcess());
                 }
             });
         }
