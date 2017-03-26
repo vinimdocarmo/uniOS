@@ -87,10 +87,12 @@
         }
     }
 
-    function SchedulerCtrl($scope, $interval, scheduler, Process, EVENTS) {
+    function SchedulerCtrl($scope, $interval, scheduler, settings, Process, EVENTS, METHODS) {
         scheduler.build();
 
         $scope.scheduler = scheduler;
+        $scope.settings = settings;
+        $scope.METHODS = METHODS;
 
         $scope.runScheduler = runScheduler;
         $scope.resetScheduler = resetScheduler;

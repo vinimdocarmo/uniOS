@@ -10,7 +10,11 @@
     </md-toolbar>
     <md-content layout-padding layout="column" layout-align="center space-between">
         <div>
-            <h2>Scheduler</h2>
+            <h2>
+                Scheduler
+                <span ng-if="settings.getMethod() === METHODS.ROUND_ROBIN">(Priority Based Round Robin)</span>
+                <span ng-if="settings.getMethod() === METHODS.LTG">(Least Time To Go)</span>
+            </h2>
             <md-content layout-padding layout="column">
                 <div layout-padding class="md-whiteframe-1dp" ng-controller="CPUCtrl">
                     <h3>
