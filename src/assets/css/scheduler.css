@@ -22,7 +22,19 @@
     border: solid 1px black;
 }
 
+.process-box.aborted-process {
+    border: solid 1px red;
+}
+
+.process-box.terminated-process {
+    border: solid 1px green;
+}
+
 .process-box .process-deadline, .cpu-box .process-deadline {
     font-size: 12px;
     color: gray;
+}
+
+.process-box .process-status {
+    font-size: 7px;
 }
