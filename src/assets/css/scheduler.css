@@ -23,11 +23,11 @@
 }
 
 .process-box.aborted-process {
-    border: solid 1px red;
+    background-color: rgba(255, 0, 0, 0.2);
 }
 
 .process-box.terminated-process {
-    border: solid 1px green;
+    background-color: rgba(0, 128, 0, 0.2);
 }
 
 .process-box .process-deadline, .cpu-box .process-deadline {

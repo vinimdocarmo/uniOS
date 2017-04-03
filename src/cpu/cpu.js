@@ -27,21 +27,12 @@
     function CPUCtrl($scope, $interval, scheduler, EVENTS) {
         $scope.scheduler = scheduler;
 
-        $interval(notifyEmptyCore, 100);
         $interval(notifyTerminatedProcess, 100);
-
-        function notifyEmptyCore() {
-            _.each(scheduler.getCPUs(), (cpu) => {
-                if (cpu.process === null) {
-                    $scope.$emit(EVENTS.EMPTY_CPU, cpu);
-                }
-            });
-        }
 
         function notifyTerminatedProcess() {
             _.each(scheduler.getCPUs(), (cpu) => {
                 if (cpu.process && cpu.process.timeLeft === 0) {
-                    $scope.$emit(EVENTS.PROCESS_DONE, cpu.releaseProcess());
+                    $scope.$parent.$emit(EVENTS.PROCESS_DONE, cpu, cpu.releaseProcess());
                 }
             });
         }

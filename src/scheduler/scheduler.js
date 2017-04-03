@@ -38,6 +38,7 @@
             },
             run() {
                 startProcessesLifeCycle();
+                initialSchedule.bind(this)();
             },
             nextProcess () {
                 if (_.isEmpty(processes)) {
@@ -55,6 +56,14 @@
                 return terminatedOrAbortedProcesses.push(process);
             }
         };
+
+        function initialSchedule() {
+            var self = this;
+
+            _.each(CPUs, (cpu) => {
+                cpu.setProcess(self.nextProcess());
+            });
+        }
 
         function buildCPUs() {
             for (let i = 0; i < settings.getNumberOfCPUs(); i++) {
@@ -99,7 +108,6 @@
         $scope.addNewProcess = addNewProcess;
 
         function runScheduler() {
-            subscribeEmptyCPUEvent();
             subscribeProcessDoneEvent();
             $scope.scheduler.run();
             $interval(abortNextProcessIfDeadlineIsZero, 0);
@@ -121,9 +129,12 @@
             scheduler.addProcess(new Process());
         }
 
-        function subscribeEmptyCPUEvent() {
-            $scope.$on(EVENTS.EMPTY_CPU, (event, cpu) => {
+        function subscribeProcessDoneEvent() {
+            $scope.$on(EVENTS.PROCESS_DONE, (event, cpu, terminatedProcess) => {
+                scheduler.addTerminatedProcess(terminatedProcess);
+
                 var nextProcess = scheduler.nextProcess();
+
                 if (nextProcess) {
                     if (nextProcess.deadline === 0) {
                         scheduler.addAbortedProcess(nextProcess);
@@ -131,12 +142,6 @@
                         cpu.setProcess(nextProcess);
                     }
                 }
-            });
-        }
-
-        function subscribeProcessDoneEvent() {
-            $scope.$on(EVENTS.PROCESS_DONE, (event, terminatedProcess) => {
-                scheduler.addTerminatedProcess(terminatedProcess);
             });
         }
     }
