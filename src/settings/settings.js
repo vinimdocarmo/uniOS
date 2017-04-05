@@ -2,6 +2,7 @@
 
     angular
         .module('settings', [])
+        .constant('ONE_SECOND', 1000)
         .constant('METHODS', {
             ROUND_ROBIN: 'ROUND_ROBIN',
             LTG: 'LTG'
@@ -13,7 +14,7 @@
         var numberOfCPUs = 4,
             numberOfProcesses = 10,
             method = METHODS.ROUND_ROBIN,
-            numberOfQuantum = 4;
+            quantum = 4;
 
         return {
             setNumberOfCPUs(_numberOfCPUs_) {
@@ -25,7 +26,7 @@
                 return this;
             },
             setNumberOfQuantum(_numberOfQuantum_) {
-                numberOfQuantum = _numberOfQuantum_;
+                quantum = _numberOfQuantum_;
                 return this;
             },
             setMethod(_method_) {
@@ -38,8 +39,8 @@
             getNumberOfProcesses() {
                 return numberOfProcesses;
             },
-            getNumberOfQuantum() {
-                return numberOfQuantum;
+            getQuantum() {
+                return quantum;
             },
             getMethod() {
                 return method;
@@ -48,7 +49,7 @@
                 return `
                 method: ${method}
                 number of CPUs: ${numberOfCPUs}
-                number of quantum: ${numberOfQuantum}
+                number of quantum: ${quantum}
                 number of processes: ${numberOfProcesses}`;
             }
         };
@@ -59,7 +60,7 @@
         $scope.numberOfCPUs = settings.getNumberOfCPUs();
         $scope.method = settings.getMethod();
         $scope.numberOfProcesses = settings.getNumberOfProcesses();
-        $scope.numberOfQuantum = settings.getNumberOfQuantum();
+        $scope.numberOfQuantum = settings.getQuantum();
 
         $scope.saveSettings = saveSettings;
 

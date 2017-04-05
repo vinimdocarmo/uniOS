@@ -5,16 +5,19 @@
         .service('scheduler', scheduler)
         .controller('SchedulerCtrl', SchedulerCtrl);
 
-    function scheduler(settings, Process, CPU, PROCESS_STATUS) {
+    function scheduler($timeout, settings, Process, CPU, PROCESS_STATUS, METHODS, ONE_SECOND) {
         var CPUs = [],
             processes = [],
-            terminatedOrAbortedProcesses = [];
+            terminatedOrAbortedProcesses = [],
+            targetPriority = 0,
+            factors = [3, 2, 1, 0];
 
         return {
             build() {
                 clearScheduler();
                 buildCPUs();
                 buildProcesses();
+                buildFactors();
             },
             getSettings () {
                 return settings;
@@ -29,40 +32,113 @@
                 return terminatedOrAbortedProcesses;
             },
             addProcess(process) {
-                _addInOrder(process);
-                process.startLifeCycle();
-                settings.setNumberOfProcesses(settings.getNumberOfProcesses() + 1);
+                switch (settings.getMethod()) {
+                    case METHODS.LTG:
+                        addProcessForLTG();
+                        break;
+                    case METHODS.ROUND_ROBIN:
+                        addProcessForRoundRobin(process);
+                }
+            },
+            scheduleProcess(cpu, process) {
+                switch (settings.getMethod()) {
+                    case METHODS.LTG:
+                        scheduleProcessForLTG(cpu, process);
+                        break;
+                    case METHODS.ROUND_ROBIN:
+                        scheduleProcessForRoundRobin(cpu, process);
+                        break;
+                }
+            },
+            getTargetPriority() {
+                return targetPriority;
             },
             clearScheduler() {
                 clearScheduler();
             },
             run() {
-                startProcessesLifeCycle();
+                if (settings.getMethod() === METHODS.LTG) {
+                    startProcessesLifeCycle();
+                }
                 initialSchedule.bind(this)();
             },
-            nextProcess () {
+            nextProcess() {
                 if (_.isEmpty(processes)) {
                     return null;
                 }
-                settings.setNumberOfProcesses(settings.getNumberOfProcesses() - 1);
-                return processes.shift();
+
+                switch (settings.getMethod()) {
+                    case METHODS.LTG:
+                        return nextProcessForLTG();
+                        break;
+                    case METHODS.ROUND_ROBIN:
+                        return nextProcessForRoundRobin();
+                        break;
+                }
             },
             addAbortedProcess(process) {
-                process.setStatus(PROCESS_STATUS.ABORTED);
-                return terminatedOrAbortedProcesses.push(process);
+                addAbortedProcess(process);
             },
             addTerminatedProcess(process) {
-                process.setStatus(PROCESS_STATUS.TERMINATED);
-                return terminatedOrAbortedProcesses.push(process);
+                addTerminatedProcess(process);
             }
         };
 
         function initialSchedule() {
-            var self = this;
-
             _.each(CPUs, (cpu) => {
-                cpu.setProcess(self.nextProcess());
+                switch (settings.getMethod()) {
+                    case METHODS.LTG:
+                        scheduleProcessForLTG(cpu, nextProcessForLTG());
+                    case METHODS.ROUND_ROBIN:
+                        scheduleProcessForRoundRobin(cpu, nextProcessForRoundRobin());
+                }
             });
+        }
+
+        function addAbortedProcess(process) {
+            process.setStatus(PROCESS_STATUS.ABORTED);
+            terminatedOrAbortedProcesses.push(process);
+        }
+
+        function addTerminatedProcess(process) {
+            process.setStatus(PROCESS_STATUS.TERMINATED);
+            return terminatedOrAbortedProcesses.push(process);
+        }
+
+        function nextPriority() {
+            var nextPriority = targetPriority++;
+
+            if (nextPriority === processes.length - 1) {
+                targetPriority = 0;
+            }
+
+            return nextPriority;
+        }
+
+        function nextProcessForLTG() {
+            var nextProcess = processes.shift();
+
+            if (nextProcess) {
+                settings.setNumberOfProcesses(settings.getNumberOfProcesses() - 1);
+            }
+
+            return nextProcess;
+        }
+
+        function nextProcessForRoundRobin() {
+            var nextProcess = processes[nextPriority()].shift();
+
+            if (nextProcess) {
+                settings.setNumberOfProcesses(settings.getNumberOfProcesses() - 1);
+            } else {
+                let processesIsEmpty = _.every(processes, (processesByPriority) => processesByPriority.length === 0);
+
+                if (!processesIsEmpty) {
+                    return nextProcessForRoundRobin();
+                }
+            }
+
+            return nextProcess;
         }
 
         function buildCPUs() {
@@ -72,10 +148,83 @@
         }
 
         function buildProcesses() {
+            switch (settings.getMethod()) {
+                case METHODS.LTG:
+                    buildProcessesForLTG();
+                    break;
+                case METHODS.ROUND_ROBIN:
+                    buildProcessesForRoundRobin();
+            }
+        }
+
+        function buildFactors() {
+            if (settings.getMethod() === METHODS.ROUND_ROBIN) {
+                for (let i = 0; i < 4; i++) {
+                    factors[i] = parseFloat(Math.random().toFixed(1));
+                }
+
+                factors = _.sortBy(factors, (f) => -f);
+            }
+        }
+
+        function addProcessForLTG(process) {
+            _addInOrder(process);
+            settings.setNumberOfProcesses(settings.getNumberOfProcesses() + 1);
+            process.startLifeCycle();
+        }
+
+        function addProcessForRoundRobin(process) {
+            processes[process.priority].push(process);
+            settings.setNumberOfProcesses(settings.getNumberOfProcesses() + 1);
+        }
+
+        function scheduleProcessForLTG(cpu, process) {
+            cpu.setProcess(process);
+        }
+
+        function scheduleProcessForRoundRobin(cpu, process) {
+            cpu.setProcess(process);
+
+            $timeout(() => {
+                if (cpu.process) {
+                    var releasedProcess = cpu.releaseProcess();
+
+                    if (!releasedProcess) {
+                        return;
+                    }
+
+                    if (releasedProcess.timeLeft === 0) {
+                        addTerminatedProcess(releasedProcess);
+                    } else {
+                        addProcessForRoundRobin(releasedProcess);
+                    }
+                }
+            }, process.quantum * ONE_SECOND);
+        }
+
+        function buildProcessesForLTG() {
             for (let i = 0; i < settings.getNumberOfProcesses(); i++) {
                 _addInOrder(new Process());
             }
         }
+
+        function buildProcessesForRoundRobin() {
+            for (let i = 0; i < settings.getNumberOfProcesses(); i++) {
+                let process = new Process();
+                let quantum = settings.getQuantum() + factors[process.priority];
+
+                process.setQuantum(quantum);
+
+                processes[process.priority] = processes[process.priority] || [];
+
+                processes[process.priority].push(process);
+            }
+
+            for (let i = 0; i < processes.length; i++) {
+                processes[i] = processes[i] || [];
+            }
+        }
+
 
         function clearScheduler() {
             CPUs = [];
@@ -108,9 +257,14 @@
         $scope.addNewProcess = addNewProcess;
 
         function runScheduler() {
-            subscribeProcessDoneEvent();
             $scope.scheduler.run();
-            $interval(abortNextProcessIfDeadlineIsZero, 0);
+
+            if (settings.getMethod() === METHODS.LTG) {
+                $interval(abortNextProcessIfDeadlineIsZero, 0);
+                subscribeProcessDoneEvent();
+            } else if (settings.getMethod() === METHODS.ROUND_ROBIN) {
+                subscribeEmptyCPUEvent();
+            }
         }
 
         function abortNextProcessIfDeadlineIsZero() {
@@ -139,8 +293,18 @@
                     if (nextProcess.deadline === 0) {
                         scheduler.addAbortedProcess(nextProcess);
                     } else {
-                        cpu.setProcess(nextProcess);
+                        scheduler.scheduleProcess(cpu, nextProcess);
                     }
+                }
+            });
+        }
+
+        function subscribeEmptyCPUEvent() {
+            $scope.$on(EVENTS.EMPTY_CPU, (event, cpu) => {
+                var nextProcess = scheduler.nextProcess();
+
+                if (nextProcess) {
+                    scheduler.scheduleProcess(cpu, nextProcess);
                 }
             });
         }

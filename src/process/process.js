@@ -12,10 +12,12 @@
         })
         .service('Process', Process);
 
-    function Process($interval, PROCESS_STATUS) {
-        const ONE_SECOND = 1000;
+    function Process($interval, PROCESS_STATUS, ONE_SECOND) {
 
         function Process() {
+            this._countdown = null;
+
+            this.quantum = 0;
             this.id = ++id;
             this.executionTime = _.random(4, 20);
             this.timeLeft = this.executionTime;
@@ -28,9 +30,17 @@
             $interval(() => this.deadline--, ONE_SECOND, this.deadline);
         };
 
+        Process.prototype.setQuantum = function (quantum) {
+            this.quantum = quantum;
+        };
+
         Process.prototype.startExecution = function () {
             this.status = PROCESS_STATUS.RUNNING;
-            $interval(() => this.timeLeft--, ONE_SECOND, this.timeLeft);
+            this._countdown = $interval(() => this.timeLeft--, ONE_SECOND, this.timeLeft);
+        };
+
+        Process.prototype.stopExecution = function () {
+            $interval.cancel(this._countdown);
         };
 
         Process.prototype.setStatus = function (status) {

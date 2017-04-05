@@ -10,10 +10,25 @@
     </md-toolbar>
     <md-content layout-padding layout="column" layout-align="center space-between">
         <div>
-            <h2>
-                Scheduler
-                <span ng-if="settings.getMethod() === METHODS.ROUND_ROBIN">(Priority Based Round Robin)</span>
-                <span ng-if="settings.getMethod() === METHODS.LTG">(Least Time To Go)</span>
+            <h2 layout="row" layout-align="space-between center">
+                <span layout="column" layout-align="start start">
+                    <span>Scheduler</span>
+                    <span style="font-size: 10px;">
+                        <span ng-if="settings.getMethod() === METHODS.ROUND_ROBIN">(Priority Based Round Robin)</span>
+                        <span ng-if="settings.getMethod() === METHODS.LTG">(Least Time To Go)</span>
+                    </span>
+                </span>
+
+                <div>
+                    <md-button class="md-fab md-mini md-raised md-primary" aria-label="Run"
+                               ng-click="runScheduler()">
+                        <md-icon md-svg-icon="action:restore"></md-icon>
+                    </md-button>
+                    <md-button class="md-fab md-mini md-raised md-warn" aria-label="Clear"
+                               ng-click="resetScheduler()">
+                        <md-icon md-svg-icon="content:clear"></md-icon>
+                    </md-button>
+                </div>
             </h2>
             <md-content layout-padding layout="column">
                 <div layout-padding class="md-whiteframe-1dp" ng-controller="CPUCtrl">
@@ -23,6 +38,8 @@
                     <div layout="row" class="cpus-container">
                         <div ng-repeat="cpu in scheduler.getCPUs()" class="cpu-box"
                              layout="column" layout-align="space-around center">
+                            <div ng-if="cpu.process" class="priority">{{cpu.process.priority}}</div>
+                            <span ng-if="cpu.process" class="quantum">Q = {{cpu.process.quantum}}s</span>
                             <span ng-show="cpu.process">{{cpu.process.id}}</span>
                             <span ng-show="cpu.process" class="process-deadline">{{cpu.process.timeLeft}}s</span>
                         </div>
@@ -39,11 +56,25 @@
                             <md-icon md-svg-icon="content:add"></md-icon>
                         </md-button>
                     </h3>
-                    <div layout="row" class="processes-container">
+                    <div layout="row" class="processes-container" ng-if="settings.getMethod() === METHODS.LTG">
                         <div ng-repeat="process in scheduler.getProcesses()" class="process-box"
                              layout="column" layout-align="space-around center">
                             <span>{{process.id}}</span>
                             <span class="process-deadline">{{process.deadline}}s</span>
+                        </div>
+                    </div>
+                    <div ng-if="settings.getMethod() === METHODS.ROUND_ROBIN"
+                         ng-repeat="processes in scheduler.getProcesses()"
+                         layout="column" class="processes-container">
+                        <div layout="row" layout-align="start center">
+                            <h4 class="process-priority" ng-class="{ target: $index === scheduler.getTargetPriority() }">{{$index}}</h4>
+                            <div ng-repeat="process in processes" layout="column" layout-align="space-around center"
+                                 class="process-box">
+                                <div class="priority">{{process.priority}}</div>
+                                <span class="quantum">Q = {{process.quantum}}s</span>
+                                <span>{{process.id}}</span>
+                                <span class="process-deadline">{{process.deadline}}s</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -64,13 +95,5 @@
                 </div>
             </md-content>
         </div>
-        <md-button class="md-raised md-primary" ng-click="runScheduler()">
-            RUN
-            <md-icon md-svg-icon="action:restore"></md-icon>
-        </md-button>
-        <md-button class="md-raised md-warn" ng-click="resetScheduler()">
-            RESET
-            <md-icon md-svg-icon="content:clear"></md-icon>
-        </md-button>
     </md-content>
 </div>
