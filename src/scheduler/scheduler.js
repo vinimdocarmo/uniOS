@@ -5,7 +5,7 @@
         .service('scheduler', scheduler)
         .controller('SchedulerCtrl', SchedulerCtrl);
 
-    function scheduler($timeout, settings, Process, CPU, PROCESS_STATUS, METHODS, ONE_SECOND) {
+    function scheduler($timeout, $interval, settings, Process, CPU, PROCESS_STATUS, METHODS, ONE_SECOND) {
         var CPUs = [],
             processes = [],
             terminatedOrAbortedProcesses = [],
@@ -101,6 +101,9 @@
         }
 
         function addTerminatedProcess(process) {
+            if (!process) {
+                return;
+            }
             process.setStatus(PROCESS_STATUS.TERMINATED);
             return terminatedOrAbortedProcesses.push(process);
         }
@@ -185,7 +188,7 @@
         function scheduleProcessForRoundRobin(cpu, process) {
             cpu.setProcess(process);
 
-            $timeout(() => {
+            var executionTimeout = $timeout(() => {
                 if (cpu.process) {
                     var releasedProcess = cpu.releaseProcess();
 
@@ -200,6 +203,14 @@
                     }
                 }
             }, process.quantum * ONE_SECOND);
+
+            var interval = $interval(() => {
+                if (process.timeLeft === 0) {
+                    $timeout.cancel(executionTimeout);
+                    $interval.cancel(interval);
+                    addTerminatedProcess(cpu.releaseProcess());
+                }
+            }, 100, process.quantum * ONE_SECOND);
         }
 
         function buildProcessesForLTG() {

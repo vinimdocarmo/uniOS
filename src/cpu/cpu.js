@@ -16,6 +16,10 @@
         };
 
         CPU.prototype.releaseProcess = function () {
+            if (!this.process) {
+                return null;
+            }
+
             this.process.stopExecution();
 
             var process = this.process;
