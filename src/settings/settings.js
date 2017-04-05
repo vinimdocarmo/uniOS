@@ -13,7 +13,7 @@
     function settings(METHODS) {
         var numberOfCPUs = 4,
             numberOfProcesses = 10,
-            method = METHODS.ROUND_ROBIN,
+            method = METHODS.LTG,
             quantum = 4;
 
         return {
@@ -70,8 +70,6 @@
                 .setMethod($scope.method)
                 .setNumberOfProcesses($scope.numberOfProcesses)
                 .setNumberOfQuantum($scope.numberOfQuantum);
-
-            console.log(settings.toString());
         }
     }
 

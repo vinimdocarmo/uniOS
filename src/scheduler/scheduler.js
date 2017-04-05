@@ -89,8 +89,10 @@
                 switch (settings.getMethod()) {
                     case METHODS.LTG:
                         scheduleProcessForLTG(cpu, nextProcessForLTG());
+                        break;
                     case METHODS.ROUND_ROBIN:
                         scheduleProcessForRoundRobin(cpu, nextProcessForRoundRobin());
+                        break;
                 }
             });
         }

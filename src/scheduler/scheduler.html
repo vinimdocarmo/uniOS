@@ -38,8 +38,8 @@
                     <div layout="row" class="cpus-container">
                         <div ng-repeat="cpu in scheduler.getCPUs()" class="cpu-box"
                              layout="column" layout-align="space-around center">
-                            <div ng-if="cpu.process" class="priority">{{cpu.process.priority}}</div>
-                            <span ng-if="cpu.process" class="quantum">Q = {{cpu.process.quantum}}s</span>
+                            <div ng-if="cpu.process && settings.getMethod() === METHODS.ROUND_ROBIN" class="priority">{{cpu.process.priority}}</div>
+                            <span ng-if="cpu.process && cpu.process.quantum" class="quantum">Q = {{cpu.process.quantum}}s</span>
                             <span ng-show="cpu.process">{{cpu.process.id}}</span>
                             <span ng-show="cpu.process" class="process-deadline">{{cpu.process.timeLeft}}s</span>
                         </div>

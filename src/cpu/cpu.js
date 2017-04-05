@@ -51,7 +51,6 @@
         function notifyTerminatedProcessForRoundRobin() {
             _.each(scheduler.getCPUs(), (cpu) => {
                 if (cpu.process && cpu.process.timeLeft === 0) {
-                    console.log('cpu done');
                     $scope.$parent.$emit(EVENTS.PROCESS_DONE, cpu, cpu.releaseProcess());
                 }
             });
