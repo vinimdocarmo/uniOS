@@ -34,10 +34,11 @@
             addProcess(process) {
                 switch (settings.getMethod()) {
                     case METHODS.LTG:
-                        addProcessForLTG();
+                        addProcessForLTG(process);
                         break;
                     case METHODS.ROUND_ROBIN:
                         addProcessForRoundRobin(process);
+                        break;
                 }
             },
             scheduleProcess(cpu, process) {
@@ -159,6 +160,7 @@
                     break;
                 case METHODS.ROUND_ROBIN:
                     buildProcessesForRoundRobin();
+                    break;
             }
         }
 
@@ -179,6 +181,8 @@
         }
 
         function addProcessForRoundRobin(process) {
+            let quantum = settings.getQuantum() + factors[process.priority];
+            process.setQuantum(quantum);
             processes[process.priority].push(process);
             settings.setNumberOfProcesses(settings.getNumberOfProcesses() + 1);
         }
