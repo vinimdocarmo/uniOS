@@ -30,5 +30,30 @@ describe('block memory: ', function () {
         it('o método isHole() deve retornar true', function () {
             expect(entry.isHole()).to.be.true;
         });
+    });
+
+    describe('quando criar diversos blocos de memória', function () {
+
+        let blocks = [];
+
+        before(function () {
+            blocks.push(new BlockMemory(null, 19));
+            blocks.push(new BlockMemory(null, 19));
+            blocks.push(new BlockMemory(null, 19));
+            blocks.push(new BlockMemory(null, 19));
+            blocks.push(new BlockMemory(null, 19));
+            blocks.push(new BlockMemory(null, 19));
+            blocks.push(new BlockMemory(null, 19));
+        });
+
+        it('cada um deve ter um identificador diferente de todos os outros', function () {
+            blocks.forEach(function (block) {
+                blocks.forEach(function (otherBlock) {
+                    if (block !== otherBlock) {
+                        expect(block.id).to.not.be.equal(otherBlock.id);
+                    }
+                });
+            });
+        });
     })
 });
