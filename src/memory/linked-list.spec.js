@@ -64,4 +64,43 @@ describe('linked list: ', function () {
             expect(linkedList.size).to.be.equal(2);
         });
     });
+
+    describe('quando a lista tem vários elementos', function () {
+
+        let list,
+            firstElement,
+            element,
+            lastElement,
+            initialSize;
+
+        beforeEach(function () {
+            list = new LinkedList();
+            list.add(firstElement = new BlockMemory(16));
+            list.add(new BlockMemory(16));
+            list.add(new BlockMemory(16));
+            list.add(new BlockMemory(16));
+            list.add(element = new BlockMemory(16));
+            list.add(new BlockMemory(16));
+            list.add(new BlockMemory(16));
+            list.add(lastElement = new BlockMemory(16));
+
+            initialSize = list.getSize();
+        });
+
+        it('deve ser capaz de apagar o primeiro elemento da lista', function () {
+            list.remove(firstElement);
+            expect(list.getSize()).to.be.equal(initialSize - 1);
+        });
+
+        it('deve ser capaz de apagar o último elemento da list', function () {
+            list.remove(element);
+            expect(list.getSize()).to.be.equal(initialSize - 1);
+        });
+
+        it('deve ser capaz de apagar um elemento intermediário da lista', function () {
+            list.remove(lastElement);
+            expect(list.getSize()).to.be.equal(initialSize - 1);
+        });
+
+    });
 });

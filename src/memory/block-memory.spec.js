@@ -33,6 +33,21 @@ describe('block memory: ', function () {
                 expect(block.isHole()).to.be.true;
             });
         });
+        
+        it('deve ser capaz de setar um novo valor de tamanho alocado', function () {
+            const size = 2;
+            block.setAllocatedSize(size);
+            expect(block.getAllocatedSize()).to.be.equal(size);
+        });
+
+        it('deve dar erro caso o tamanho alocado seja maior que o tamanho do bloco', function () {
+            try {
+                block.setAllocatedSize(block.getSize() + 1);
+                throw new Error('deveria ter dado erro');
+            } catch (error) {
+                expect(error.message).to.match(/attempt to allocate/);
+            }
+        });
 
     });
 

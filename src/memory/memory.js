@@ -19,6 +19,21 @@
                     this.allocatedSize = 0;
                 }
 
+                setAllocatedSize(size) {
+                    if (size > this.size) {
+                        throw new Error(`attempt to allocate ${size} in block of size ${this.size}`);
+                    }
+                    this.allocatedSize = size;
+                }
+
+                getSize() {
+                    return this.size;
+                }
+
+                getAllocatedSize() {
+                    return this.allocatedSize;
+                }
+
                 next() {
                     return this.nextBlock;
                 }
@@ -47,6 +62,10 @@
 
                 getSize() {
                     return this.size;
+                }
+
+                getBlockList() {
+                    return this.blockList;
                 }
 
                 getFirstBlock() {

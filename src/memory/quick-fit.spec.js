@@ -20,7 +20,7 @@ describe('quick fit: ', function () {
         let memory, quickFit;
 
         beforeEach(function () {
-            memory = new Memory(2048);
+            memory = new Memory(10000);
 
             memory.allocate(8);
             memory.allocate(20);
@@ -65,7 +65,7 @@ describe('quick fit: ', function () {
 
             let memory, quickFit, numberOfLists = 2, requestsInterval = 10, expectedBlock;
 
-            before(function () {
+            beforeEach(function () {
                 memory = new Memory(4000);
 
                 memory.allocate(8).free();
@@ -74,8 +74,7 @@ describe('quick fit: ', function () {
                 memory.allocate(8).free();
                 memory.allocate(50).free();
                 memory.allocate(116).free();
-                expectedBlock = memory.allocate(256);
-                expectedBlock.free();
+                memory.allocate(256).free();
                 memory.allocate(256).free();
                 memory.allocate(256).free();
                 memory.allocate(256).free();
@@ -96,7 +95,7 @@ describe('quick fit: ', function () {
                 const sizeMostRequested = 256,
                     secondSizeMostRequested = 8;
 
-                before(function () {
+                beforeEach(function () {
                     quickFit.allocate(sizeMostRequested);
                     quickFit.allocate(sizeMostRequested);
                     quickFit.allocate(sizeMostRequested);
@@ -159,19 +158,18 @@ describe('quick fit: ', function () {
                 });
 
                 it('deve manter uma lista que possui todos os outros bloco de memória vazios', function () {
-                    const fallbackBlocks = quickFit.getFallbackBlocks();
-                    const cachedSizes = _.keys(quickFit.getCache());
+                    const freeBlocks = quickFit.getFreeBlocks();
 
                     let currentBlock = memory.getFirstBlock();
-                    let fallbackBlocksCount = 0;
+                    let freeBlocksCount = 0;
 
                     do {
-                        if (currentBlock.isHole() && !_.contains(cachedSizes, currentBlock.size.toString())) {
-                            fallbackBlocksCount++;
+                        if (currentBlock.isHole()) {
+                            freeBlocksCount++;
                         }
                     } while (currentBlock = currentBlock.next());
 
-                    expect(fallbackBlocks.size).to.be.equal(fallbackBlocksCount);
+                    expect(freeBlocks.size).to.be.equal(freeBlocksCount);
                 });
 
                 it('o histograma deve ser esvaziado', function () {
@@ -179,24 +177,15 @@ describe('quick fit: ', function () {
                 });
 
                 describe('e se a próxima requisição não estiver no cache', function () {
-                    let block;
+                    let block, firstFreeBlock;
 
-                    before(function () {
+                    beforeEach(function () {
+                        firstFreeBlock = quickFit.getFreeBlocks().head.data;
                         block = quickFit.allocate(2);
                     });
 
                     it('o bloco retornado deve ser o primeiro bloco livre na lista \'others\'', function () {
-                        expect(block).to.be.equal(quickFit.getFallbackBlocks().head.data);
-                        /**
-                         * TODO:
-                         * An allocation request is satisfied by removing
-                             a block from the appropriate lookaside list; if the lookaside
-                             list is empty, a First Fit allocation is done.
-                         * TODO:
-                         * When a block
-                            is freed, it is placed on a lookaside list or the First Fit list
-                            according to its size.
-                         */
+                        expect(block).to.be.equal(firstFreeBlock);
 
                     });
                 });
@@ -205,7 +194,8 @@ describe('quick fit: ', function () {
 
                     let block;
 
-                    before(function () {
+                    beforeEach(function () {
+                        expectedBlock = quickFit.getCache()[sizeMostRequested].head.data;
                         block = quickFit.allocate(sizeMostRequested);
                     });
 

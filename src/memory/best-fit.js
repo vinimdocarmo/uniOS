@@ -30,6 +30,10 @@
 
                     return allocatedBlock || this.memory.allocate(size);
                 }
+
+                free(block) {
+                    block.free();
+                }
             }
 
             return BestFit;
