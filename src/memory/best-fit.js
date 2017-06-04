@@ -1,26 +1,37 @@
 'use strict';
 
-class BestFit {
-    constructor(memory) {
-        this.memory = memory;
-    }
+(function () {
+    angular
+        .module('best-fit', [])
+        .factory('BestFit', function () {
+            class BestFit {
+                constructor(memory) {
+                    this.memory = memory;
+                }
 
-    allocate(size) {
-        let currentBlock = this.memory.head;
-        let allocatedBlock = null;
+                allocate(size) {
+                    let currentBlock = this.memory.blockList.head;
+                    let allocatedBlock = null;
 
-        do {
-            if (currentBlock.isHole()) {
-                if (!allocatedBlock) {
-                    allocatedBlock = currentBlock;
-                } else {
-                    if (currentBlock.size >= size && currentBlock.size < allocatedBlock.size) {
-                        allocatedBlock = currentBlock;
-                    }
+                    do {
+                        if (!currentBlock) {
+                            break;
+                        }
+                        if (currentBlock.isHole()) {
+                            if (!allocatedBlock) {
+                                allocatedBlock = currentBlock;
+                            } else {
+                                if (currentBlock.size >= size && currentBlock.size < allocatedBlock.size) {
+                                    allocatedBlock = currentBlock;
+                                }
+                            }
+                        }
+                    } while (currentBlock = currentBlock.next());
+
+                    return allocatedBlock || this.memory.allocate(size);
                 }
             }
-        } while (currentBlock = currentBlock.next());
 
-        return allocatedBlock;
-    }
-}
+            return BestFit;
+        });
+})();

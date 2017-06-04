@@ -2,6 +2,16 @@
 
 describe('linked list: ', function () {
 
+    let BlockMemory, LinkedList;
+    
+    beforeEach(module('memory'));
+    beforeEach(module('linked-list'));
+
+    beforeEach(inject(function (_BlockMemory_, _LinkedList_) {
+        BlockMemory = _BlockMemory_;
+        LinkedList = _LinkedList_;
+    }));
+
     describe('quando a lista estiver vazia', function () {
 
         let linkedList;
@@ -26,7 +36,7 @@ describe('linked list: ', function () {
 
         beforeEach(function () {
             linkedList = new LinkedList();
-            block = new BlockMemory({}, 2);
+            block = new BlockMemory(2);
             linkedList.add(block);
         });
 
@@ -45,12 +55,12 @@ describe('linked list: ', function () {
 
         beforeEach(function () {
             linkedList = new LinkedList();
-            block = new BlockMemory({}, 10);
+            block = new BlockMemory(10);
             linkedList.add(block);
         });
 
         it('deve ser capaz de adidionar mais um elemento', function () {
-            linkedList.add(new BlockMemory(null, 10));
+            linkedList.add(new BlockMemory(10));
             expect(linkedList.size).to.be.equal(2);
         });
     });

@@ -2,8 +2,39 @@
 
 (function () {
     angular
-        .module('memory', [])
-        .factory('Memory', function () {
+        .module('memory', ['linked-list'])
+        .factory('BlockMemory', function () {
+            class BlockMemory {
+                constructor(size) {
+                    if (!size) {
+                        throw TypeError('you must pass the size of the block');
+                    }
+                    this.id = _.uniqueId();
+                    this.size = size;
+                    this.allocatedSize = size;
+                    this.nextBlock = null;
+                }
+
+                free() {
+                    this.allocatedSize = 0;
+                }
+
+                next() {
+                    return this.nextBlock;
+                }
+
+                setNextBlock(nextBlock) {
+                    this.nextBlock = nextBlock;
+                }
+
+                isHole() {
+                    return this.allocatedSize === 0;
+                }
+            }
+
+            return BlockMemory;
+        })
+        .factory('Memory', function (BlockMemory, LinkedList) {
             class Memory {
                 constructor(size) {
                     if (!size) {
@@ -26,7 +57,7 @@
                     if (this._allocatedSize + size > this.size) {
                         throw new Error('OutOfMemory');
                     }
-                    const block = new BlockMemory(null, size);
+                    const block = new BlockMemory(size);
                     this.blockList.add(block);
                     this._allocatedSize += block.size;
                     return block;

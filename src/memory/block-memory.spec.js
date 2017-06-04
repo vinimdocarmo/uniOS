@@ -1,35 +1,47 @@
 'use strict';
 
 describe('block memory: ', function () {
-    it('deve ser capaz de criar uma instancia de entry', function () {
-        const process = new Object();
-        const len  = 8;
-        const entry = new BlockMemory(process, len);
 
-        expect(entry).to.exists;
-        expect(entry.data).to.be.equal(process);
-        expect(entry.size).to.be.equal(len);
-    });
+    let BlockMemory;
 
-    it('deve ser capaz de setar a próxima entry', function () {
-        const process = new Object();
-        const len  = 8;
-        const entry = new BlockMemory(process, len);
-        const nextEntry = new BlockMemory({}, 5);
+    beforeEach(module('memory'));
 
-        entry.setNextBlock(nextEntry);
-    });
+    beforeEach(inject(function (_BlockMemory_) {
+        BlockMemory = _BlockMemory_;
+    }));
 
-    describe('quando uma entry não possuir um dado', function () {
-        let entry;
+    describe('ao criar um bloco de memória', function () {
 
-        before(function () {
-            entry = new BlockMemory(null, 10);
+        let block;
+        const size = 16;
+
+        beforeEach(function () {
+            block = new BlockMemory(size);
         });
 
-        it('o método isHole() deve retornar true', function () {
-            expect(entry.isHole()).to.be.true;
+        it('o tamanho alocado deve ser igual ao tamanho do bloco', function () {
+            expect(block.size).to.be.equal(size);
+            expect(block.allocatedSize).to.be.equal(size);
         });
+
+        describe('e o bloco for liberado', function () {
+            beforeEach(function () {
+                block.free();
+            });
+
+            it('o método isHole deve retornar true', function () {
+                expect(block.isHole()).to.be.true;
+            });
+        });
+
+    });
+
+    it('deve ser capaz de setar o próximo bloco', function () {
+        const size  = 8;
+        const block = new BlockMemory(size);
+        const nextBlock = new BlockMemory(5);
+
+        block.setNextBlock(nextBlock);
     });
 
     describe('quando criar diversos blocos de memória', function () {
@@ -37,13 +49,13 @@ describe('block memory: ', function () {
         let blocks = [];
 
         before(function () {
-            blocks.push(new BlockMemory(null, 19));
-            blocks.push(new BlockMemory(null, 19));
-            blocks.push(new BlockMemory(null, 19));
-            blocks.push(new BlockMemory(null, 19));
-            blocks.push(new BlockMemory(null, 19));
-            blocks.push(new BlockMemory(null, 19));
-            blocks.push(new BlockMemory(null, 19));
+            blocks.push(new BlockMemory(19));
+            blocks.push(new BlockMemory(19));
+            blocks.push(new BlockMemory(19));
+            blocks.push(new BlockMemory(19));
+            blocks.push(new BlockMemory(19));
+            blocks.push(new BlockMemory(19));
+            blocks.push(new BlockMemory(19));
         });
 
         it('cada um deve ter um identificador diferente de todos os outros', function () {
