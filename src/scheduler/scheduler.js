@@ -219,7 +219,7 @@
                 block.setProcess(process);
             } catch (error) {
                 if (error.message.match(/OutOfMemory/)) {
-                    alert('A process has run out of memory. Aborting...');
+                    console.error(`Out of memory. Process #${process.id} requested ${process.getBytes()} bytes. Aborting...`);
                     addAbortedProcess(process);
                     return;
                 }

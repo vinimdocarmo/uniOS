@@ -74,13 +74,20 @@
                     if (!size) {
                         throw new TypeError('size must be passed to the constructor');
                     }
-                    this._allocatedSize = 0;
                     this.blockList = new LinkedList();
                     this.size = size;
                 }
 
                 getSize() {
                     return this.size;
+                }
+
+                get allocatedSize() {
+                    let allocatedSize = 0;
+                    this.asArray().forEach(function (block) {
+                        allocatedSize += block.getAllocatedSize();
+                    });
+                    return allocatedSize;
                 }
 
                 asArray() {
@@ -104,12 +111,11 @@
                 }
 
                 allocate(size) {
-                    if (this._allocatedSize + size > this.size) {
+                    if (this.allocatedSize + size > this.size) {
                         throw new Error('OutOfMemory');
                     }
                     const block = new BlockMemory(size);
                     this.blockList.add(block);
-                    this._allocatedSize += block.size;
                     return block;
                 }
             }

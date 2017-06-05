@@ -109,7 +109,7 @@
                     </span>
                 </h2>
                 <div class="md-whiteframe-1dp memory" layout-padding layout="column">
-                    <span>{{scheduler.getMemoryManager().getMemory().getSize()}} bytes</span>
+                    <span>{{scheduler.getMemoryManager().getMemory().allocatedSize}}/{{scheduler.getMemoryManager().getMemory().getSize()}} bytes</span>
                     <div ng-repeat="block in scheduler.getMemoryManager().getMemory().asArray()" layout="row" flex
                          class="block-memory" ng-class="{ allocated: block.getAllocatedSize() > 0 }">
                         <span flex="25" class="block-id">#{{block.id}}</span>
