@@ -30,6 +30,27 @@
             <label>Number processes</label>
             <input type="number" min="1" ng-model="numberOfProcesses">
         </md-input-container>
+        <h2>Memory</h2>
+        <md-input-container>
+            <label>Memory allocation algorithm</label>
+            <md-select ng-model="memoryAlgorithm">
+                <md-option value="{{MEMORY_ALGORITHMS.BEST_FIT}}">Best Fit</md-option>
+                <md-option value="{{MEMORY_ALGORITHMS.QUICK_FIT}}">Quick Fit</md-option>
+                <md-option value="{{MEMORY_ALGORITHMS.MERGE_FIT}}">Merge Fit</md-option>
+            </md-select>
+        </md-input-container>
+        <md-input-container>
+            <label>Memory size in bytes</label>
+            <input type="number" min="32" ng-model="memorySize">
+        </md-input-container>
+        <md-input-container ng-if="memoryAlgorithm === MEMORY_ALGORITHMS.QUICK_FIT">
+            <label>Number of lists</label>
+            <input type="number" min="2" ng-model="numberOfLists">
+        </md-input-container>
+        <md-input-container ng-if="memoryAlgorithm === MEMORY_ALGORITHMS.QUICK_FIT">
+            <label>Requests interval</label>
+            <input type="number" min="10" ng-model="requestsInterval">
+        </md-input-container>
         <md-button class="md-raised md-primary" ng-click="saveSettings()">save</md-button>
     </md-content>
 </div>

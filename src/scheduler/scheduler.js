@@ -1,15 +1,17 @@
 (function () {
 
     angular
-        .module('scheduler', ['settings', 'process', 'cpu'])
+        .module('scheduler', ['settings', 'process', 'cpu', 'memory-manager', 'memory'])
         .service('scheduler', scheduler)
         .controller('SchedulerCtrl', SchedulerCtrl);
 
-    function scheduler($timeout, $interval, settings, Process, CPU, PROCESS_STATUS, METHODS, ONE_SECOND) {
+    function scheduler($timeout, $interval, settings, Process, CPU, PROCESS_STATUS, METHODS, ONE_SECOND,
+                       MEMORY_ALGORITHMS, MemoryManagerBestFit, Memory, MemoryManagerQuickFit) {
         var CPUs = [],
             processes = [],
             terminatedOrAbortedProcesses = [],
             targetPriority = 0,
+            memoryManager,
             factors = [3, 2, 1, 0];
 
         return {
@@ -18,6 +20,7 @@
                 buildCPUs();
                 buildProcesses();
                 buildFactors();
+                buildMemoryManager();
             },
             getSettings () {
                 return settings;
@@ -27,6 +30,9 @@
             },
             getProcesses() {
                 return processes;
+            },
+            getMemoryManager() {
+                return memoryManager;
             },
             getTerminatedAndAbortedProcesses() {
                 return terminatedOrAbortedProcesses;
@@ -84,6 +90,18 @@
                 addTerminatedProcess(process);
             }
         };
+
+        function buildMemoryManager() {
+            const memory = new Memory(settings.getMemorySize());
+            switch (settings.getMemoryAlgorithm()) {
+                case MEMORY_ALGORITHMS.BEST_FIT:
+                    memoryManager = new MemoryManagerBestFit(memory);
+                    break;
+                case MEMORY_ALGORITHMS.QUICK_FIT:
+                    memoryManager = new MemoryManagerQuickFit(memory, settings.getNumberOfLists(), settings.getRequestsInterval());
+                    break;
+            }
+        }
 
         function initialSchedule() {
             _.each(CPUs, (cpu) => {
@@ -262,12 +280,13 @@
         }
     }
 
-    function SchedulerCtrl($scope, $interval, scheduler, settings, Process, EVENTS, METHODS) {
+    function SchedulerCtrl($scope, $interval, scheduler, settings, Process, EVENTS, METHODS, MEMORY_ALGORITHMS) {
         scheduler.build();
 
         $scope.scheduler = scheduler;
         $scope.settings = settings;
         $scope.METHODS = METHODS;
+        $scope.MEMORY_ALGORITHMS = MEMORY_ALGORITHMS;
 
         $scope.runScheduler = runScheduler;
         $scope.resetScheduler = resetScheduler;

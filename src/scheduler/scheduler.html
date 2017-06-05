@@ -9,91 +9,119 @@
         </div>
     </md-toolbar>
     <md-content layout-padding layout="column" layout-align="center space-between">
-        <div>
-            <h2 layout="row" layout-align="space-between center">
-                <span layout="column" layout-align="start start">
-                    <span>Scheduler</span>
-                    <span style="font-size: 10px;">
-                        <span ng-if="settings.getMethod() === METHODS.ROUND_ROBIN">(Priority Based Round Robin)</span>
-                        <span ng-if="settings.getMethod() === METHODS.LTG">(Least Time To Go)</span>
+        <div layout="row" flex>
+            <div flex>
+                <h2 layout="row" layout-align="space-between center">
+                    <span layout="column" layout-align="start start">
+                        <span>Scheduler</span>
+                        <span style="font-size: 10px;">
+                            <span ng-if="settings.getMethod() === METHODS.ROUND_ROBIN">(Priority Based Round Robin)</span>
+                            <span ng-if="settings.getMethod() === METHODS.LTG">(Least Time To Go)</span>
+                        </span>
                     </span>
-                </span>
 
-                <div>
-                    <md-button class="md-fab md-mini md-raised md-primary" aria-label="Run"
-                               ng-click="runScheduler()">
-                        <md-icon md-svg-icon="action:restore"></md-icon>
-                    </md-button>
-                    <md-button class="md-fab md-mini md-raised md-warn" aria-label="Clear"
-                               ng-click="resetScheduler()">
-                        <md-icon md-svg-icon="content:clear"></md-icon>
-                    </md-button>
-                </div>
-            </h2>
-            <md-content layout-padding layout="column">
-                <div layout-padding class="md-whiteframe-1dp" ng-controller="CPUCtrl">
-                    <h3>
-                        CPU <span class="scheduler-info">({{scheduler.getSettings().getNumberOfCPUs()}} CPUs)</span>
-                    </h3>
-                    <div layout="row" class="cpus-container">
-                        <div ng-repeat="cpu in scheduler.getCPUs()" class="cpu-box"
-                             layout="column" layout-align="space-around center">
-                            <div ng-if="cpu.process && settings.getMethod() === METHODS.ROUND_ROBIN" class="priority">{{cpu.process.priority}}</div>
-                            <span ng-if="cpu.process && cpu.process.quantum" class="quantum">Q = {{cpu.process.quantum}}s</span>
-                            <span ng-show="cpu.process">{{cpu.process.id}}</span>
-                            <span ng-show="cpu.process" class="process-deadline">{{cpu.process.timeLeft}}s</span>
-                        </div>
-                    </div>
-                </div>
-                <div layout-padding class="md-whiteframe-1dp">
-                    <h3 layout="row" layout-align="space-between center">
-                                <span>
-                                    Processes
-                                    <span class="scheduler-info">({{scheduler.getSettings().getNumberOfProcesses()}} processes)</span>
-                                </span>
-                        <md-button class="md-icon-button md-raised md-accent" aria-label="add process"
-                                   ng-click="addNewProcess()">
-                            <md-icon md-svg-icon="content:add"></md-icon>
+                    <div>
+                        <md-button class="md-fab md-mini md-raised md-primary" aria-label="Run"
+                                   ng-click="runScheduler()">
+                            <md-icon md-svg-icon="action:restore"></md-icon>
                         </md-button>
-                    </h3>
-                    <div layout="row" class="processes-container" ng-if="settings.getMethod() === METHODS.LTG">
-                        <div ng-repeat="process in scheduler.getProcesses()" class="process-box"
-                             layout="column" layout-align="space-around center">
-                            <span>{{process.id}}</span>
-                            <span class="process-deadline">{{process.deadline}}s</span>
+                        <md-button class="md-fab md-mini md-raised md-warn" aria-label="Clear"
+                                   ng-click="resetScheduler()">
+                            <md-icon md-svg-icon="content:clear"></md-icon>
+                        </md-button>
+                    </div>
+                </h2>
+                <md-content layout-padding layout="column">
+                    <div layout-padding class="md-whiteframe-1dp" ng-controller="CPUCtrl">
+                        <h3>
+                            CPU <span class="scheduler-info">({{scheduler.getSettings().getNumberOfCPUs()}} CPUs)</span>
+                        </h3>
+                        <div layout="row" class="cpus-container">
+                            <div ng-repeat="cpu in scheduler.getCPUs()" class="cpu-box"
+                                 layout="column" layout-align="space-around center">
+                                <div ng-if="cpu.process && settings.getMethod() === METHODS.ROUND_ROBIN" class="priority">{{cpu.process.priority}}</div>
+                                <span ng-if="cpu.process && cpu.process.quantum" class="quantum">Q = {{cpu.process.quantum}}s</span>
+                                <span ng-show="cpu.process">{{cpu.process.id}}</span>
+                                <span ng-show="cpu.process" class="process-deadline">{{cpu.process.timeLeft}}s</span>
+                            </div>
                         </div>
                     </div>
-                    <div ng-if="settings.getMethod() === METHODS.ROUND_ROBIN"
-                         ng-repeat="processes in scheduler.getProcesses()"
-                         layout="column" class="processes-container">
-                        <div layout="row" layout-align="start center">
-                            <h4 class="process-priority" ng-class="{ target: $index === scheduler.getTargetPriority() }">{{$index}}</h4>
-                            <div ng-repeat="process in processes" layout="column" layout-align="space-around center"
-                                 class="process-box">
-                                <div class="priority">{{process.priority}}</div>
-                                <span class="quantum">Q = {{process.quantum}}s</span>
+                    <div layout-padding class="md-whiteframe-1dp">
+                        <h3 layout="row" layout-align="space-between center">
+                                    <span>
+                                        Processes
+                                        <span class="scheduler-info">({{scheduler.getSettings().getNumberOfProcesses()}} processes)</span>
+                                    </span>
+                            <md-button class="md-icon-button md-raised md-accent" aria-label="add process"
+                                       ng-click="addNewProcess()">
+                                <md-icon md-svg-icon="content:add"></md-icon>
+                            </md-button>
+                        </h3>
+                        <div layout="row" class="processes-container" ng-if="settings.getMethod() === METHODS.LTG">
+                            <div ng-repeat="process in scheduler.getProcesses()" class="process-box"
+                                 layout="column" layout-align="space-around center">
                                 <span>{{process.id}}</span>
                                 <span class="process-deadline">{{process.deadline}}s</span>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div layout-padding class="md-whiteframe-1dp">
-                    <h3>Aborted/Terminated</h3>
-                    <div layout="row" class="processes-container">
-                        <div ng-repeat="process in scheduler.getTerminatedAndAbortedProcesses()" class="process-box"
-                             layout="column" layout-align="space-around center"
-                             ng-class="{
-                                'aborted-process': process.isAborted(),
-                                'terminated-process': process.isTerminated()
-                             }">
-                            <span>{{process.id}}</span>
-                            <span class="process-status">{{process.getStatus()}}</span>
-                            <span class="process-deadline">{{process.timeLeft}}s</span>
+                        <div ng-if="settings.getMethod() === METHODS.ROUND_ROBIN"
+                             ng-repeat="processes in scheduler.getProcesses()"
+                             layout="column" class="processes-container">
+                            <div layout="row" layout-align="start center">
+                                <h4 class="process-priority" ng-class="{ target: $index === scheduler.getTargetPriority() }">{{$index}}</h4>
+                                <div ng-repeat="process in processes" layout="column" layout-align="space-around center"
+                                     class="process-box">
+                                    <div class="priority">{{process.priority}}</div>
+                                    <span class="quantum">Q = {{process.quantum}}s</span>
+                                    <span>{{process.id}}</span>
+                                    <span class="process-deadline">{{process.deadline}}s</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <div layout-padding class="md-whiteframe-1dp">
+                        <h3>Aborted/Terminated</h3>
+                        <div layout="row" class="processes-container">
+                            <div ng-repeat="process in scheduler.getTerminatedAndAbortedProcesses()" class="process-box"
+                                 layout="column" layout-align="space-around center"
+                                 ng-class="{
+                                    'aborted-process': process.isAborted(),
+                                    'terminated-process': process.isTerminated()
+                                 }">
+                                <span>{{process.id}}</span>
+                                <span class="process-status">{{process.getStatus()}}</span>
+                                <span class="process-deadline">{{process.timeLeft}}s</span>
+                            </div>
+                        </div>
+                    </div>
+                </md-content>
+            </div>
+            <span flex="5"></span>
+            <div flex="20">
+                <h2 layout="row" layout-align="space-between center">
+                    <span layout="column" layout-align="start start">
+                        <span>Memory</span>
+                        <span style="font-size: 10px;">
+                            <span ng-if="settings.getMemoryAlgorithm() === MEMORY_ALGORITHMS.BEST_FIT">(Best Fit)</span>
+                            <span ng-if="settings.getMemoryAlgorithm() === MEMORY_ALGORITHMS.QUICK_FIT">(Quick Fit)</span>
+                            <span ng-if="settings.getMemoryAlgorithm() === MEMORY_ALGORITHMS.MERGE_FIT">(Merge Fit)</span>
+                        </span>
+                    </span>
+                </h2>
+                <div class="md-whiteframe-1dp memory" layout-padding layout="column">
+                    <span>256 / 1024 bytes</span>
+                    <div layout="row" flex class="block-memory">
+                        <span flex="30" class="block-id">#14</span>
+                        <span flex="60">32/256 bytes</span>
+                        <span flex="10"></span>
+                    </div>
+                    <div layout="row" flex class="block-memory allocated">
+                        <span flex="30" class="block-id">#134</span>
+                        <span flex="60">256/256 bytes</span>
+                        <span flex="10">#5</span>
+                    </div>
                 </div>
-            </md-content>
+            </div>
         </div>
     </md-content>
 </div>

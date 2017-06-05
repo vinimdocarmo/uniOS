@@ -9,7 +9,7 @@
 </head>
 <body ng-controller="uniOSCtrl" ng-cloak layout="row">
 
-    <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4" md-is-locked-open="true">
+    <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4" md-is-open="true">
 
         <md-toolbar class="md-theme-indigo">
             <h1 class="md-toolbar-tools">UniOS</h1>
@@ -17,7 +17,7 @@
 
         <md-content>
             <md-list>
-                <md-list-item ui-sref="scheduler" ui-sref-active="active">
+                <md-list-item ui-sref="scheduler">
                     <md-icon md-svg-icon="action:autorenew"></md-icon>
                     <p>Scheduler</p>
                 </md-list-item>
@@ -44,6 +44,12 @@
     <script src="./src/scheduler/scheduler.js"></script>
     <script src="./src/settings/settings.js"></script>
     <script src="./src/process/process.js"></script>
+    <script src="./src/memory/best-fit.js"></script>
+    <script src="./src/memory/quick-fit.js"></script>
+    <script src="./src/memory/linked-list.js"></script>
+    <script src="./src/memory/memory-manager.js"></script>
+    <script src="./src/memory/memory.js"></script>
+    <script src="./src/memory/node.js"></script>
     <script src="./src/cpu/cpu.js"></script>
 </body>
 

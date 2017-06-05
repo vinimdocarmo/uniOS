@@ -58,6 +58,20 @@
     background-color: rgba(255, 0, 0, 0.2);
 }
 
+.memory .block-memory {
+    margin-bottom: 2px;
+    border: 1px black solid;
+    font-size: 15px;
+}
+
+.memory .block-memory.allocated {
+    background-color: rgba(0, 255, 255, .3);
+}
+
+.memory .block-memory .block-id {
+    font-weight: 700;
+}
+
 .process-box.terminated-process {
     background-color: rgba(0, 128, 0, 0.2);
 }
