@@ -2,12 +2,14 @@
 
 describe('block memory: ', function () {
 
-    let BlockMemory;
+    let BlockMemory, Process;
 
     beforeEach(module('memory'));
+    beforeEach(module('process'));
 
-    beforeEach(inject(function (_BlockMemory_) {
+    beforeEach(inject(function (_BlockMemory_, _Process_) {
         BlockMemory = _BlockMemory_;
+        Process = _Process_;
     }));
 
     describe('ao criar um bloco de memória', function () {
@@ -24,13 +26,24 @@ describe('block memory: ', function () {
             expect(block.allocatedSize).to.be.equal(size);
         });
 
+        it('deve ser capaz de setar o processo associado ao bloco', function () {
+            const process = new Process();
+            block.setProcess(process);
+            expect(block.getProcess()).to.be.equal(process);
+        });
+
         describe('e o bloco for liberado', function () {
             beforeEach(function () {
+                block.setProcess(new Process());
                 block.free();
             });
 
             it('o método isHole deve retornar true', function () {
                 expect(block.isHole()).to.be.true;
+            });
+
+            it('o processo deve ser nulo', function () {
+                 expect(block.getProcess()).to.be.null;
             });
         });
         

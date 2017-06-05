@@ -17,10 +17,10 @@
         return {
             build() {
                 clearScheduler();
+                buildMemoryManager();
                 buildCPUs();
                 buildProcesses();
                 buildFactors();
-                buildMemoryManager();
             },
             getSettings () {
                 return settings;
@@ -210,7 +210,20 @@
         }
 
         function scheduleProcessForRoundRobin(cpu, process) {
-            cpu.setProcess(process);
+            let block;
+
+            try {
+                block = memoryManager.allocate(process.getBytes());
+                cpu.setProcess(process);
+                process.setBlockMemory(block);
+                block.setProcess(process);
+            } catch (error) {
+                if (error.message.match(/OutOfMemory/)) {
+                    alert('A process has run out of memory. Aborting...');
+                    addAbortedProcess(process);
+                    return;
+                }
+            }
 
             var executionTimeout = $timeout(() => {
                 if (cpu.process) {
@@ -219,6 +232,8 @@
                     if (!releasedProcess) {
                         return;
                     }
+
+                    memoryManager.free(releasedProcess.getBlockMemory());
 
                     if (releasedProcess.timeLeft === 0) {
                         addTerminatedProcess(releasedProcess);
@@ -232,7 +247,11 @@
                 if (process.timeLeft === 0) {
                     $timeout.cancel(executionTimeout);
                     $interval.cancel(interval);
-                    addTerminatedProcess(cpu.releaseProcess());
+                    const releasedProcess = cpu.releaseProcess();
+                    if (releasedProcess) {
+                        memoryManager.free(releasedProcess.getBlockMemory());
+                        addTerminatedProcess(releasedProcess);
+                    }
                 }
             }, 100, process.quantum * ONE_SECOND);
         }
@@ -265,6 +284,7 @@
             CPUs = [];
             processes = [];
             terminatedOrAbortedProcesses = [];
+            memoryManager = null;
         }
 
         function _addInOrder(process) {

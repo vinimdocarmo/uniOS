@@ -19,7 +19,9 @@
                         }
                         if (currentBlock.isHole()) {
                             if (!allocatedBlock) {
-                                allocatedBlock = currentBlock;
+                                if (currentBlock.size >= size) {
+                                    allocatedBlock = currentBlock;
+                                }
                             } else {
                                 if (currentBlock.size >= size && currentBlock.size < allocatedBlock.size) {
                                     allocatedBlock = currentBlock;
@@ -27,6 +29,11 @@
                             }
                         }
                     } while (currentBlock = currentBlock.next());
+
+                    if (allocatedBlock) {
+                        allocatedBlock.setAllocatedSize(size);
+                        return allocatedBlock;
+                    }
 
                     return allocatedBlock || this.memory.allocate(size);
                 }

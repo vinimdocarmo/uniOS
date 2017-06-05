@@ -159,12 +159,12 @@ describe('quick fit: ', function () {
 
                 it('deve manter uma lista que possui todos os outros bloco de memória vazios', function () {
                     const freeBlocks = quickFit.getFreeBlocks();
-
+                    const cache = quickFit.getCache();
                     let currentBlock = memory.getFirstBlock();
                     let freeBlocksCount = 0;
 
                     do {
-                        if (currentBlock.isHole()) {
+                        if (currentBlock.isHole() && !cache[currentBlock.getSize()]) {
                             freeBlocksCount++;
                         }
                     } while (currentBlock = currentBlock.next());

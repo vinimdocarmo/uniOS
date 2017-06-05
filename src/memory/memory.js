@@ -12,11 +12,21 @@
                     this.id = _.uniqueId();
                     this.size = size;
                     this.allocatedSize = size;
+                    this.process = null;
                     this.nextBlock = null;
+                }
+
+                setProcess(process) {
+                    this.process = process;
+                }
+
+                getProcess() {
+                    return this.process;
                 }
 
                 free() {
                     this.allocatedSize = 0;
+                    this.process = null;
                 }
 
                 setAllocatedSize(size) {
@@ -62,6 +72,18 @@
 
                 getSize() {
                     return this.size;
+                }
+
+                asArray() {
+                    let memoryAsArray = [];
+                    let currentBlock = this.getFirstBlock();
+
+                    while (currentBlock) {
+                        memoryAsArray.push(currentBlock);
+                        currentBlock = currentBlock.next();
+                    }
+
+                    return memoryAsArray;
                 }
 
                 getBlockList() {

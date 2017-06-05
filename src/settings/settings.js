@@ -18,8 +18,8 @@
     function settings(METHODS, MEMORY_ALGORITHMS) {
         var numberOfCPUs = 4,
             numberOfProcesses = 10,
-            method = METHODS.LTG,
-            memorySize = 32,
+            method = METHODS.ROUND_ROBIN,
+            memorySize = 5000,
             numberOfLists = 2,
             requestsInterval = 10,
             memoryAlgorithm = MEMORY_ALGORITHMS.BEST_FIT,

@@ -3,7 +3,7 @@
     var id = 0;
 
     angular
-        .module('process', [])
+        .module('process', ['settings'])
         .constant('PROCESS_STATUS', {
             ABORTED: 'ABORTED',
             TERMINATED: 'TERMINATED',
@@ -19,6 +19,8 @@
 
             this.quantum = 0;
             this.id = ++id;
+            this.blockMemory = null;
+            this.bytes = _.random(32, 1024);
             this.executionTime = _.random(4, 20);
             this.timeLeft = this.executionTime;
             this.priority = _.random(0, 3);
@@ -49,6 +51,18 @@
 
         Process.prototype.getStatus = function () {
             return this.status;
+        };
+
+        Process.prototype.setBlockMemory = function (block) {
+            this.blockMemory = block;
+        };
+
+        Process.prototype.getBlockMemory = function () {
+            return this.blockMemory;
+        };
+
+        Process.prototype.getBytes = function () {
+            return this.bytes;
         };
 
         Process.prototype.isAborted = function () {

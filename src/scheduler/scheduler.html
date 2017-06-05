@@ -109,16 +109,12 @@
                     </span>
                 </h2>
                 <div class="md-whiteframe-1dp memory" layout-padding layout="column">
-                    <span>256 / 1024 bytes</span>
-                    <div layout="row" flex class="block-memory">
-                        <span flex="30" class="block-id">#14</span>
-                        <span flex="60">32/256 bytes</span>
-                        <span flex="10"></span>
-                    </div>
-                    <div layout="row" flex class="block-memory allocated">
-                        <span flex="30" class="block-id">#134</span>
-                        <span flex="60">256/256 bytes</span>
-                        <span flex="10">#5</span>
+                    <span>{{scheduler.getMemoryManager().getMemory().getSize()}} bytes</span>
+                    <div ng-repeat="block in scheduler.getMemoryManager().getMemory().asArray()" layout="row" flex
+                         class="block-memory" ng-class="{ allocated: block.getAllocatedSize() > 0 }">
+                        <span flex="25" class="block-id">#{{block.id}}</span>
+                        <span flex="55">{{block.getAllocatedSize()}}/{{block.getSize()}} bytes</span>
+                        <span flex="20">#{{block.getProcess().id}}</span>
                     </div>
                 </div>
             </div>

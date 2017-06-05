@@ -42,6 +42,19 @@ describe('quando criar uma instancia de Memory', function () {
             expect(memory.getFirstBlock().size).to.be.equal(firstBlockSize);
         });
 
+        it('deve retornar um array de blocos quando chamar o método asArray', function () {
+            const memoryArray = memory.asArray();
+            expect(memoryArray).to.have.length(memory.getBlockList().getSize());
+
+            let currentBlock = memory.getFirstBlock(), i = 0;
+
+            while (currentBlock) {
+                expect(memoryArray[i]).to.be.equal(currentBlock);
+                i++;
+                currentBlock = currentBlock.next();
+            }
+        });
+
         describe('e a memória já estiver cheia', function () {
             it('deve dar erro caso tente alocar um bloco que seja maior que o espaço livre', function () {
                 try {

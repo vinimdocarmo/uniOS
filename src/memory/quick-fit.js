@@ -51,6 +51,10 @@
                         this.histogram = {};
                     }
 
+                    if (allocatedBlock) {
+                        allocatedBlock.setAllocatedSize(size);
+                    }
+
                     return allocatedBlock || this.memory.allocate(size);
                 }
 
@@ -114,14 +118,14 @@
 
                     let currentBlock = self.memory.getFirstBlock();
 
+                    this.freeBlocks = new LinkedList();
+
                     do {
-                        if (this.cache[currentBlock.size]) {
-                            if (currentBlock.isHole()) {
+                        if (currentBlock.isHole()) {
+                            if (this.cache[currentBlock.size]) {
                                 this.cache[currentBlock.size].add(new Node(currentBlock));
-                            }
-                        } else {
-                            if (currentBlock.isHole()) {
-                                //todo
+                            } else {
+                                this.freeBlocks.add(new Node(currentBlock));
                             }
                         }
                     } while(currentBlock = currentBlock.next());
