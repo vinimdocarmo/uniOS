@@ -14,6 +14,7 @@
                     this.allocatedSize = size;
                     this.process = null;
                     this.nextBlock = null;
+                    this.prevBlock = null;
                 }
 
                 setProcess(process) {
@@ -48,8 +49,16 @@
                     return this.nextBlock;
                 }
 
+                prev() {
+                    return this.prevBlock;
+                }
+
                 setNextBlock(nextBlock) {
                     this.nextBlock = nextBlock;
+                }
+
+                setPrevBlock(prevBlock) {
+                    this.prevBlock = prevBlock;
                 }
 
                 isHole() {
