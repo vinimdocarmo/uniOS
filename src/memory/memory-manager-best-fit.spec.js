@@ -21,7 +21,7 @@ describe('memory manager: ', function () {
             let manager, memory;
 
             beforeEach(function () {
-                memory = new Memory(256);
+                memory = new Memory(256, new LinkedList());
                 manager = new MemoryManagerBestFit(memory);
             });
 
@@ -40,7 +40,7 @@ describe('memory manager: ', function () {
                 expectedBlock;
 
             beforeEach(function () {
-                memory = new Memory(256);
+                memory = new Memory(256, new LinkedList());
 
                 memory.allocate(6);
                 expectedBlock = memory.allocate(7);

@@ -2,7 +2,7 @@
 
 (function () {
     angular
-        .module('memory-manager', ['best-fit', 'quick-fit'])
+        .module('memory-manager', ['best-fit', 'quick-fit', 'merge-fit'])
         .factory('MemoryManagerBestFit', function (BestFit) {
             class MemoryManagerBestFit extends MemoryManager {
                 constructor(memory) {
@@ -39,6 +39,16 @@
             }
 
             return MemoryManagerQuickFit;
+        })
+        .factory('MemoryManagerMergeFit', function (MergeFit) {
+            class MemoryManagerMergeFit extends MemoryManager {
+                constructor(memory) {
+                    super(new MergeFit(memory));
+                    this.memory = memory;
+                }
+            }
+
+            return MemoryManagerMergeFit;
         });
 
     class MemoryManager {
@@ -56,12 +66,6 @@
 
         getMemory() {
             return this.memory;
-        }
-    }
-
-    class MemoryManagerMergeQuick extends MemoryManager {
-        constructor(memory) {
-            super(new MergeFit(memory));
         }
     }
 })();

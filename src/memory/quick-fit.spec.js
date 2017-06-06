@@ -20,7 +20,7 @@ describe('quick fit: ', function () {
         let memory, quickFit;
 
         beforeEach(function () {
-            memory = new Memory(10000);
+            memory = new Memory(10000, new LinkedList());
 
             memory.allocate(8);
             memory.allocate(20);
@@ -66,7 +66,7 @@ describe('quick fit: ', function () {
             let memory, quickFit, numberOfLists = 2, requestsInterval = 10, expectedBlock;
 
             beforeEach(function () {
-                memory = new Memory(4000);
+                memory = new Memory(4000, new LinkedList());
 
                 memory.allocate(8).free();
                 memory.allocate(8).free();

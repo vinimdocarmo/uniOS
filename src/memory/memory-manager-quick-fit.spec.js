@@ -2,20 +2,22 @@
 
 describe('MemoryManagerQuickFit', function () {
 
-    let MemoryManagerQuickFit, Memory, manager;
+    let MemoryManagerQuickFit, Memory, manager, LinkedList;
 
     beforeEach(module('memory-manager'));
     beforeEach(module('memory'));
+    beforeEach(module('linked-list'));
 
-    beforeEach(inject(function (_MemoryManagerQuickFit_, _Memory_) {
+    beforeEach(inject(function (_MemoryManagerQuickFit_, _Memory_, _LinkedList_) {
         MemoryManagerQuickFit = _MemoryManagerQuickFit_;
         Memory = _Memory_;
+        LinkedList = _LinkedList_;
     }));
 
 
     describe('quando a memória estiver totalmente vazia', function () {
         beforeEach(function () {
-            manager = new MemoryManagerQuickFit(new Memory(32));
+            manager = new MemoryManagerQuickFit(new Memory(32, new LinkedList()));
         });
 
         describe('e um bloco for alocado', function () {
@@ -37,7 +39,7 @@ describe('MemoryManagerQuickFit', function () {
         let manager, prevBlockSize, block32Bytes;
 
         beforeEach(function () {
-            const memory = new Memory(256);
+            const memory = new Memory(256, new LinkedList());
             const numberOfLists = 2;
             const requestsInterval = 1000;
             manager = new MemoryManagerQuickFit(memory, numberOfLists, requestsInterval);
@@ -84,7 +86,7 @@ describe('MemoryManagerQuickFit', function () {
             blocks8Bytes = [];
             blocks6Bytes = [];
             blocks4Bytes = [];
-            manager = new MemoryManagerQuickFit(new Memory(256), numberOfLists, requestsInterval);
+            manager = new MemoryManagerQuickFit(new Memory(256, new LinkedList()), numberOfLists, requestsInterval);
 
             blocks8Bytes.push(manager.allocate(8));
             blocks8Bytes.push(manager.allocate(8));

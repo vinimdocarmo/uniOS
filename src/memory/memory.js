@@ -5,13 +5,13 @@
         .module('memory', ['linked-list'])
         .factory('BlockMemory', function () {
             class BlockMemory {
-                constructor(size) {
-                    if (!size) {
+                constructor(size, isHole) {
+                    if (size !== 0 && !size) {
                         throw TypeError('you must pass the size of the block');
                     }
                     this.id = _.uniqueId();
                     this.size = size;
-                    this.allocatedSize = size;
+                    this.allocatedSize = isHole ? 0 : size;
                     this.process = null;
                     this.nextBlock = null;
                     this.prevBlock = null;
@@ -39,6 +39,10 @@
 
                 getSize() {
                     return this.size;
+                }
+
+                setSize(size) {
+                    this.size = size;
                 }
 
                 getAllocatedSize() {
@@ -70,11 +74,14 @@
         })
         .factory('Memory', function (BlockMemory, LinkedList) {
             class Memory {
-                constructor(size) {
+                constructor(size, listStructure) {
                     if (!size) {
                         throw new TypeError('size must be passed to the constructor');
                     }
-                    this.blockList = new LinkedList();
+                    if (!listStructure) {
+                        throw new TypeError('you must pass a instance of a list structure');
+                    }
+                    this.blockList = listStructure;
                     this.size = size;
                 }
 
@@ -108,6 +115,19 @@
 
                 getFirstBlock() {
                     return this.blockList.head;
+                }
+
+                getLastBlock() {
+                    let lastBlock = this.getFirstBlock();
+
+                    while (lastBlock) {
+                        if (lastBlock.next() === null) {
+                            return lastBlock;
+                        }
+                        lastBlock = lastBlock.next();
+                    }
+
+                    return null;
                 }
 
                 allocate(size) {

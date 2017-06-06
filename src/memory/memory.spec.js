@@ -2,12 +2,14 @@
 
 describe('quando criar uma instancia de Memory', function () {
 
-    let Memory;
+    let Memory, LinkedList;
 
     beforeEach(module('memory'));
+    beforeEach(module('linked-list'));
 
-    beforeEach(inject(function(_Memory_) {
+    beforeEach(inject(function(_Memory_, _LinkedList_) {
         Memory = _Memory_;
+        LinkedList = _LinkedList_;
     }));
 
     it('deve dar erro caso não se passa o tamanho total da memória no construtor', function () {
@@ -21,7 +23,7 @@ describe('quando criar uma instancia de Memory', function () {
 
     it('deve retornar o tamanho total da memória ao chamar o método getSize', function () {
         const size = 256;
-        const memory = new Memory(size);
+        const memory = new Memory(size, new LinkedList());
         expect(memory.getSize()).to.be.equal(size);
     });
 
@@ -31,7 +33,7 @@ describe('quando criar uma instancia de Memory', function () {
         let firstBlockSize;
 
         before(function () {
-            memory = new Memory(50);
+            memory = new Memory(50, new LinkedList());
             firstBlockSize = 32;
 
             memory.allocate(firstBlockSize);

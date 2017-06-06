@@ -43,6 +43,10 @@
                     }
                 }
 
+                setHead(block) {
+                    this.head = block;
+                }
+
                 add(node) {
                     if (this.size === 0) {
                         this.head = node;
