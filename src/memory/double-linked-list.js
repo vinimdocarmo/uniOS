@@ -60,6 +60,18 @@
                     }
                     this.size++;
                 }
+
+                updateSize() {
+                    let currentBlock = this.head,
+                        size = 0;
+
+                    while (currentBlock) {
+                        size++;
+                        currentBlock = currentBlock.next();
+                    }
+
+                    this.size = size;
+                }
             }
 
             return DoubleLinkedList;

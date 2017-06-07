@@ -1,12 +1,13 @@
 (function () {
 
     angular
-        .module('scheduler', ['settings', 'process', 'cpu', 'memory-manager', 'memory'])
+        .module('scheduler', ['settings', 'process', 'cpu', 'memory-manager', 'memory', 'linked-list', 'double-linked-list', 'merge-fit'])
         .service('scheduler', scheduler)
         .controller('SchedulerCtrl', SchedulerCtrl);
 
     function scheduler($timeout, $interval, settings, Process, CPU, PROCESS_STATUS, METHODS, ONE_SECOND,
-                       MEMORY_ALGORITHMS, MemoryManagerBestFit, Memory, MemoryManagerQuickFit) {
+                       MEMORY_ALGORITHMS, MemoryManagerBestFit, Memory, MemoryManagerQuickFit, MemoryManagerMergeFit,
+                       DoubleLinkedList, LinkedList) {
         var CPUs = [],
             processes = [],
             terminatedOrAbortedProcesses = [],
@@ -92,13 +93,16 @@
         };
 
         function buildMemoryManager() {
-            const memory = new Memory(settings.getMemorySize());
+            const memory = new Memory(settings.getMemorySize(), new LinkedList());
             switch (settings.getMemoryAlgorithm()) {
                 case MEMORY_ALGORITHMS.BEST_FIT:
                     memoryManager = new MemoryManagerBestFit(memory);
                     break;
                 case MEMORY_ALGORITHMS.QUICK_FIT:
                     memoryManager = new MemoryManagerQuickFit(memory, settings.getNumberOfLists(), settings.getRequestsInterval());
+                    break;
+                case MEMORY_ALGORITHMS.MERGE_FIT:
+                    memoryManager = new MemoryManagerMergeFit(new Memory(settings.getMemorySize(), new DoubleLinkedList()));
                     break;
             }
         }

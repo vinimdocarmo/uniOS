@@ -9,6 +9,7 @@
                     if (size !== 0 && !size) {
                         throw TypeError('you must pass the size of the block');
                     }
+                    this.locked = false;
                     this.id = _.uniqueId();
                     this.size = size;
                     this.allocatedSize = isHole ? 0 : size;
@@ -19,6 +20,10 @@
 
                 setProcess(process) {
                     this.process = process;
+                }
+
+                lock() {
+                    this.locked = true;
                 }
 
                 getProcess() {
@@ -66,7 +71,7 @@
                 }
 
                 isHole() {
-                    return this.allocatedSize === 0;
+                    return this.allocatedSize === 0 && !this.locked;
                 }
             }
 

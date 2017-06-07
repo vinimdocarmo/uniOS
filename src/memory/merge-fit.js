@@ -48,16 +48,20 @@
                     mostRightAllocatedBlock = block.next();
                     mostLeftAllocatedBlock = block.prev();
 
-                    if (!mostRightAllocatedBlock.isHole() && !mostLeftAllocatedBlock.isHole()) {
-                        return;
+                    if (mostRightAllocatedBlock && mostLeftAllocatedBlock) {
+                        if (!mostRightAllocatedBlock.isHole() && !mostLeftAllocatedBlock.isHole()) {
+                            return;
+                        }
                     }
 
                     while (mostRightAllocatedBlock && mostRightAllocatedBlock.isHole()) {
+                        mostRightAllocatedBlock.lock();
                         sizeSum += mostRightAllocatedBlock.getSize();
                         mostRightAllocatedBlock = mostRightAllocatedBlock.next();
                     }
 
                     while (mostLeftAllocatedBlock && mostLeftAllocatedBlock.isHole()) {
+                        mostLeftAllocatedBlock.lock();
                         sizeSum += mostLeftAllocatedBlock.getSize();
                         mostLeftAllocatedBlock = mostLeftAllocatedBlock.prev();
                     }
@@ -77,8 +81,12 @@
                         mostRightAllocatedBlock.setPrevBlock(blockMerged);
                         blockMerged.setNextBlock(mostRightAllocatedBlock);
                     } else {
-                        mostLeftAllocatedBlock.setNextBlock(blockMerged);
+                        if (mostLeftAllocatedBlock) {
+                            mostLeftAllocatedBlock.setNextBlock(blockMerged);
+                        }
                     }
+
+                    this.memory.getBlockList().updateSize();
                 }
             }
 

@@ -111,7 +111,38 @@ describe('memory manager: ', function () {
                             .to.be.equal(block8Bytes.getSize() + block10Bytes.getSize() + block6Bytes.getSize());
                     });
                 });
+            });
 
+            describe('e o segundo e o terceiro bloco forem liberados', function () {
+                beforeEach(function () {
+                    block7Bytes.free();
+                    block8Bytes.free();
+                });
+
+                describe('e o primeiro bloco for liberado', function () {
+                    beforeEach(function () {
+                        manager.free(block5Bytes);
+                    });
+
+                    it('deve ocorrer merge dos blocos livres adjacentes um a um', function () {
+                        manager.getMemory().asArray().forEach(function (block) {
+                            expect(block).to.not.be.equal(block5Bytes);
+                            expect(block).to.not.be.equal(block7Bytes);
+                            expect(block).to.not.be.equal(block8Bytes);
+                        });
+
+                        const newBlockSize = manager.getMemory().asArray().some(function (block) {
+                            return block.getSize() === (block5Bytes.getSize() + block7Bytes.getSize() + block8Bytes.getSize());
+                        });
+
+                        expect(newBlockSize).to.be.true;
+                    });
+
+                    it('o primeiro bloco agora é o novo bloco criado', function () {
+                        expect(manager.getMemory().getFirstBlock().getSize())
+                            .to.be.equal(block5Bytes.getSize() + block7Bytes.getSize() + block8Bytes.getSize());
+                    });
+                });
             });
 
             describe('e dois blocos do lado esquerdo forem liberados', function () {
@@ -145,6 +176,41 @@ describe('memory manager: ', function () {
                     });
                 });
 
+            });
+
+            describe('e todos os blocos do lado esquerdo e do lado direito forem liberados', function () {
+                beforeEach(function () {
+                    block5Bytes.free();
+                    block7Bytes.free();
+                    block10Bytes.free();
+                    block6Bytes.free();
+                });
+
+                describe('e o bloco do meio for liberado', function () {
+                    beforeEach(function () {
+                        manager.free(block8Bytes);
+                    });
+
+                    it('a memória deve ter apenas um bloco 1', function () {
+                        expect(manager.getMemory().getBlockList().getSize()).to.be.equal(1);
+                    });
+
+                    it('o bloco único deve ter o tamanho total da memória', function () {
+                        const sizeSum = block5Bytes.getSize() + block6Bytes.getSize() + block10Bytes.getSize() +
+                                block7Bytes.getSize() + block8Bytes.getSize();
+                        expect(manager.getMemory().getFirstBlock().getSize()).to.be.equal(sizeSum);
+                    });
+
+                    it('o bloco não deve ser igual a nenhum anterior', function () {
+                        const uniqueBlock = manager.getMemory().getFirstBlock();
+
+                        expect(uniqueBlock).to.not.be.equal(block5Bytes);
+                        expect(uniqueBlock).to.not.be.equal(block7Bytes);
+                        expect(uniqueBlock).to.not.be.equal(block8Bytes);
+                        expect(uniqueBlock).to.not.be.equal(block6Bytes);
+                        expect(uniqueBlock).to.not.be.equal(block10Bytes);
+                    });
+                });
             });
 
             describe('e dois blocos não adjacentes forem liberados', function () {
